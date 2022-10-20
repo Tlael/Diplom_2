@@ -7,24 +7,25 @@ import io.restassured.response.ValidatableResponse;
 
 import static io.restassured.RestAssured.given;
 import static orders.OrderGenerator.*;
+
 public class OrdersUser extends Client {
     private static final String ORDERS_USER = "/api/orders";
-    public static final Order wrongOrderCheck = wrongOrder();
-    public static final Order correctOrderCheck = correctOrder();
-
+    public static final Order WRONG_ORDER_CHECK = wrongOrder();
+    public static final Order CORRECT_ORDER_CHECK = correctOrder();
 
     @Step("Create order")
     public ValidatableResponse createOrder(Boolean isLogin, Order ingredients) {
-        String bearerToken = "";
-        if (isLogin) {
-            bearerToken = UsersClient.getToken();
+        try {
+            return given()
+                    .spec(Client.getBaseSpec())
+                    .auth().oauth2(UsersClient.getToken())
+                    .body(ingredients)
+                    .post(ORDERS_USER)
+                    .then();
+        } catch (Exception e) {
+            System.out.println("Wrong auth token");
+            return null;
         }
-        return given()
-                .spec(Client.getBaseSpec())
-                .auth().oauth2(bearerToken)
-                .body(ingredients)
-                .post(ORDERS_USER)
-                .then();
     }
 
     @Step("Create order without ingredients")

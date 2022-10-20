@@ -42,12 +42,12 @@ public class CreateUserTest {
     @Test
     @DisplayName("Создание пользователя, без заполнения обязательного поля")
     public void createInvalidUserTest() {
+        deleteCheck = false;
         ValidatableResponse response = UsersClient.createWrongUser();
         int statusCode = response.extract().statusCode();
         assertEquals("Курьер создан без обязательного поля", SC_FORBIDDEN, statusCode);
         boolean isFalse = response.extract().path("success");
         assertFalse(isFalse);
-        deleteCheck = false;
     }
 
     @After
