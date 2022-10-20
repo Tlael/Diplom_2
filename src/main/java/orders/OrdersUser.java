@@ -30,23 +30,23 @@ public class OrdersUser extends Client {
 
     @Step("Create order without ingredients")
     public ValidatableResponse createOrderNoIngredients() {
-        String bearerToken = UsersClient.getToken();
         return given()
                 .spec(Client.getBaseSpec())
-                .auth().oauth2(bearerToken)
+                .auth().oauth2(UsersClient.getToken())
                 .post(ORDERS_USER)
                 .then();
     }
 
     @Step("Getting list of orders")
     public ValidatableResponse getOrders(Boolean isLogin) {
-        String bearerToken = "";
-        if (isLogin) {
-            bearerToken = UsersClient.getToken();
+        try {
+            return given()
+                    .spec(Client.getBaseSpec())
+                    .auth().oauth2(UsersClient.getToken())
+                    .get(ORDERS_USER).then();
+        } catch (Exception e) {
+            System.out.println("Wrong auth token");
+            return null;
         }
-        return given()
-                .spec(Client.getBaseSpec())
-                .auth().oauth2(bearerToken)
-                .get(ORDERS_USER).then();
     }
 }
